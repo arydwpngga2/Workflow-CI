@@ -1,0 +1,35 @@
+name: Training Pipeline
+
+on:
+  workflow_dispatch:
+
+jobs:
+  train:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Dependencies
+        run: |
+          pip install mlflow
+          pip install pandas
+          pip install numpy
+          pip install scikit-learn
+
+      - name: Run MLProject
+        run: |
+          cd Workflow-CI/MLProject
+          python -m mlflow run . --env-manager local
+      
+      - name: Upload Training Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: training-artifact
+          path: Workflow-CI/MLProject/artifacts
